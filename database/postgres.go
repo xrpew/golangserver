@@ -6,6 +6,8 @@ import (
 	"log"
 
 	"main/models"
+
+	_ "github.com/lib/pq"
 )
 
 type PostgresRepository struct {
@@ -30,7 +32,7 @@ func (repo *PostgresRepository) InsertUser(ctx context.Context, user *models.Use
 	return err
 }
 
-func (repo *PostgresRepository) GetUserByID(ctx context.Context, id int64) (*models.User, error) {
+func (repo *PostgresRepository) GetUserByID(ctx context.Context, id string) (*models.User, error) {
 	rows, err := repo.db.QueryContext(ctx, "SELECT id, email FROM users WHERE id = $1", id)
 	if err != nil {
 		return nil, err
