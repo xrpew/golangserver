@@ -1,5 +1,5 @@
 **Para inciar el proyecto**
 
-Mandatorio tener correctamente instalados go y docker
+Mandatorio tener correctamente: docker
 
 <code> $ sh init.sh </code>
