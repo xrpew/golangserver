@@ -1,6 +1,22 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: "traefik:v2.9"
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic_conf
+      - --providers.file.watch=true
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./certs:/tools/certs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/dynamic_conf/conf.yml:ro
+
   db:
     image: postgres:15.3 
     env_file:
@@ -13,5 +29,13 @@ services:
     build: .
     env_file:
       - .env
-    ports:
-      - 80:80
+    labels:
+    # http with redirection
+      - traefik.http.middlewares.redirect-middleware.redirectscheme.scheme=https
+      - traefik.http.routers.copec-router.entrypoints=web
+      - traefik.http.routers.copec-router.rule=Host(`example-login.xrpw.io`)
+      - traefik.http.routers.copec-router.middlewares=redirect-middleware
+    # https
+      - traefik.http.routers.copecsecure-router.entrypoints=websecure
+      - traefik.http.routers.copecsecure-router.tls=true
+      - traefik.http.routers.copecsecure-router.rule=Host(`example-login.xrpw.io`)
