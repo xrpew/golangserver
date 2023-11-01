@@ -15,6 +15,7 @@ type Config struct {
 	Port        string
 	JWTsecret   string
 	DatabaseURL string
+	SudoToken   string
 }
 
 type Server interface {
@@ -39,6 +40,9 @@ func NewServer(ctx context.Context, config *Config) (*Broker, error) {
 	}
 	if config.DatabaseURL == "" {
 		return nil, errors.New("la URL de la base de datos es requerida")
+	}
+	if config.SudoToken == "" {
+		return nil, errors.New("debes proporcionar un token de sudo")
 	}
 	broker := &Broker{
 		config: config,

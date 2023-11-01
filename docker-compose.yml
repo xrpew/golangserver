@@ -25,6 +25,7 @@ services:
       - "5432:5432"
     volumes:
       - ./database/up.sql:/docker-entrypoint-initdb.d/init.sql
+
   golang:
     build: .
     env_file:

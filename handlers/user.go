@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"main/models"
 	"main/repository"
 	"main/server"
@@ -19,8 +20,9 @@ const (
 )
 
 type SingUpLoginRequests struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	SudoToken string `json:"sudo_token"`
 }
 
 type SingUpResponse struct {
@@ -49,6 +51,10 @@ func SingUpHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		if requests.SudoToken != s.Config().SudoToken {
+			http.Error(w, "Invalid sudo token", http.StatusForbidden)
+			return
+		}
 		var user = models.User{
 			Email:    requests.Email,
 			Password: string(hashedPassword),
@@ -57,6 +63,7 @@ func SingUpHandler(s server.Server) http.HandlerFunc {
 		err = repository.InsertUser(r.Context(), &user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			fmt.Println("Error al insertar usuario user: ", requests.Email)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

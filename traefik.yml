@@ -1,0 +1,11 @@
+http:
+  routers:
+    my-router:
+      rule: Host(`example-login.xrpw.io`)
+      service: my-service
+
+  services:
+    my-service:
+      loadBalancer:
+        servers:
+          - url: "http://golang:80"
